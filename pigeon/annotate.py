@@ -75,7 +75,7 @@ def annotate(examples,
     buttons = []
     
     if task_type == 'classification':
-        use_dropdown = len(options) > 10
+        use_dropdown = len(options) > 15
 
         if use_dropdown:
             dd = Dropdown(options=options)
