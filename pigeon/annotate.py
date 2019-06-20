@@ -6,6 +6,7 @@ from ipywidgets import Button, Dropdown, HTML, HBox, IntSlider, FloatSlider, Tex
 def annotate(examples,
              options=None,
              shuffle=False,
+             include_previous=True,
              include_skip=True,
              display_fn=display):
     """
@@ -52,13 +53,29 @@ def annotate(examples,
             clear_output(wait=True)
             display_fn(examples[current_index])
 
+   def show_previous():
+          nonlocal current_index
+          current_index -= 1
+          set_label_text()
+          if current_index >= len(examples):
+              for btn in buttons:
+                  btn.disabled = True
+              print('Annotation done.')
+              return
+          with out:
+              clear_output(wait=True)
+              display_fn(examples[current_index])            
+            
     def add_annotation(annotation):
         annotations.append((examples[current_index], annotation))
         show_next()
 
-    def skip(btn):
-        show_next()
+    def previous(btn):
+      show_previous()
 
+    def skip(btn):
+      show_next()
+        
     count_label = HTML()
     set_label_text()
     display(count_label)
@@ -126,13 +143,19 @@ def annotate(examples,
         btn = Button(description='skip')
         btn.on_click(skip)
         buttons.append(btn)
-
+ 
+    if include_previous:
+        btn = Button(description='previous')
+        btn.on_click(previous)
+        buttons.append(btn)
+        
     box = HBox(buttons)
     display(box)
 
     out = Output()
     display(out)
 
+    show_previous()
     show_next()
 
     return annotations
